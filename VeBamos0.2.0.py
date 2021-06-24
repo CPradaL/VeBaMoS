@@ -9,51 +9,12 @@ import numpy as np
 import os , sys
 from scipy.integrate import quad
 from scipy.misc import derivative
-#from tqdm import tqdm
 import pandas as pd
 import matplotlib.pyplot as plt
 import argparse
 import time
 from datetime import date
 from datetime import datetime
-# Imágen de bienvenida VeBaMoS.
-
-
-#Día actual
-today = date.today()
-
-#Fecha actual
-now1 = datetime.now()
-
-print("""
-  ╔╗  ╔╗ ╔══╗   ╔═╗╔═╗  ╔═══╦╗         |-|   *
-  ║╚╗╔╝║ ║╔╗║   ║║╚╝║║  ║╔═╗║║         |-|  _    *  __
-  ╚╗║║╔╩═╣╚╝╚╦══╣╔╗╔╗╠══╣╚══╣║         |-|  |  *    |/'
-   ║╚╝║║═╣╔═╗║╔╗║║║║║║╔╗╠══╗╠╝        /---\ |~*~~~o~|
-   ╚╗╔╣║═╣╚═╝║╔╗║║║║║║╚╝║╚═╝╠╗       /-----\|  O o *|
-    ╚╝╚══╩═══╩╝╚╩╝╚╝╚╩══╩═══╩╝      /_______|o___O__|
-Un código de similaridad molecular.
-""")
-
-# Argumentos y flags para el uso del programa.
-
-
-
-parser = argparse.ArgumentParser(description='Vector Based Molecular Similarity (VeBaMoS) es un software de similaridad molecular que permite comparar grupos de moléculas utilizando una descripción vectorial de las moléculas con descriptores mecanico-cuánticos que permiten conseguir información química de las moléculas estudiadas.')
-
-
-parser.add_argument('-i', '--input', dest='input', metavar=' ', default='./', help='Dirección del directorio que contiene los outputs y los xyz de ORCA para evaluar la similaridad.')
-parser.add_argument('-o', '--output', dest='output', metavar=' ', default='./', help='Nombre del archivo de salida de VeBaMoS, se guardará en la misma carpeta indicada en el input.')
-parser.add_argument('-v', '--vectores', dest='vectores', action='store_true', help='Imprimir la matriz de vectores en el output.')
-parser.add_argument('-g', '--grafica', dest='grafica', action='store_true', help='Imprimir la gráfica de actividad vs similaridad.')
-args = parser.parse_args()
-
-
-
-
-
-
-
 
 class Molecula:
 
@@ -70,7 +31,6 @@ class Molecula:
         #----------------------------------------------------------#
         #------------------------Atributos-------------------------#
         #----------------------------------------------------------#
-        self.nombre = ''
         self.atomtype= []
         self.coordenadas_atomos = []
         self.volumenMolecula = 0
@@ -98,13 +58,14 @@ class Molecula:
         self.atomtype = []
         self.coordenadas_atomos = []
         self.nombre = fname
+        self.propiedades = []
 
         #----------------------------------------------------------#
         #------------------------Funciones-------------------------#
         #----------------------------------------------------------#
 
-        self.CargarCoordenadas(fname)
-        self.CargarPropiedadesElectronicas(fname)
+        self.CargarPropiedadesElectronicas(self.nombre)
+        self.CargarCoordenadas(self.nombre)
         self.CalcularD1()
         self.CalcularD2()
         self.CalcularVolumen()
@@ -117,7 +78,6 @@ class Molecula:
         self.DefinirVector()
 
 
-
     #----------------------------------------------------------#
     #----------------Leer Coordenadas '.xyz'-------------------#
     #----------------------------------------------------------#
@@ -126,7 +86,7 @@ class Molecula:
     def CargarCoordenadas(self, nombre):
 
 
-        xyz = open(args.input + nombre +'.xyz', 'r')
+        xyz = open(inputdir+nombre+'.xyz', 'r')
 
         coordenadas = xyz.readlines()
 
@@ -150,7 +110,7 @@ class Molecula:
 
     def CargarPropiedadesElectronicas(self, nombre):
 
-        out = open(args.input + nombre+'.out', 'r')
+        out = open(inputdir+nombre+'.out', 'r')
 
         output = out.readlines()
 
@@ -469,18 +429,226 @@ class Molecula:
         self.vector = np.array([self.dipolarx, self.dipolary, self.dipolarz, self.magnitudDipolar, self.EnergiaDeDispersion, self.d1, self.volumenMolecula, self.areaSuperficial, self.quadrupolex, self.quadrupoley, self.quadrupolez, self.cuadrupoloIsotropico, self.polarizabilidadx, self.polarizabilidady, self.polarizabilidadz, self.polarizabilidadIsotropica, self.HOMO, self.LUMO, max(self.d2), self.gaphl, self.dureza, self.suavidad, self.potencialquimico, self.electrofilicidad])
 
 
+
+#Día actual
+today = date.today()
+
+#Fecha actual
+now1 = datetime.now()
+
+
+# Imágen de bienvenida VeBaMoS.
+
+print("""
+  ╔╗  ╔╗ ╔══╗   ╔═╗╔═╗  ╔═══╦╗         |-|   *
+  ║╚╗╔╝║ ║╔╗║   ║║╚╝║║  ║╔═╗║║         |-|  _    *  __
+  ╚╗║║╔╩═╣╚╝╚╦══╣╔╗╔╗╠══╣╚══╣║         |-|  |  *    |/'
+   ║╚╝║║═╣╔═╗║╔╗║║║║║║╔╗╠══╗╠╝        /---\ |~*~~~o~|
+   ╚╗╔╣║═╣╚═╝║╔╗║║║║║║╚╝║╚═╝╠╗       /-----\|  O o *|
+    ╚╝╚══╩═══╩╝╚╩╝╚╝╚╩══╩═══╩╝      /_______|o___O__|
+Un código de similaridad molecular.
+""")
+
+# Argumentos y flags para el uso del programa.
+
+
+parser = argparse.ArgumentParser(description='Vector Based Molecular Similarity (VeBaMoS) es un software de similaridad molecular que permite comparar grupos de moléculas utilizando una descripción vectorial de las moléculas con descriptores mecanico-cuánticos que permiten conseguir información química de las moléculas estudiadas.')
+
+
+# Arreglar lo del input.
+# Arreglar que los argumentos no sean opcionales. (los que no sean)
+
+parser.add_argument('-i', '--input', dest='input', metavar=' ', default='./', help='Dirección del directorio que contiene los outputs y los xyz de ORCA para evaluar la similaridad.')
+parser.add_argument('-o', '--output', dest='output', metavar=' ', default='./', help='Nombre del archivo de salida de VeBaMoS, se guardará en la misma carpeta indicada en el input.')
+parser.add_argument('-v', '--vectores', dest='vectores', action='store_true', help='Imprimir la matriz de vectores en el output.')
+parser.add_argument('-g', '--grafica', dest='grafica', action='store_true', help='Imprimir la gráfica de actividad vs similaridad.')
+args = parser.parse_args()
+
+a = 0
+
+for i in range(len(args.input)):
+    if(args.input[i]== '/'):
+        a = i
+
+a = a+1
+
+inputdir= args.input[0:a]
+
+inputfile= args.input[a:]
+
+
+
 #-----------------------------------------------------------------------#
 #----------------------Crear los objetos moleculas.---------------------#
 #-----------------------------------------------------------------------#
 
 
-archivos = os.listdir(path=args.input)
+archivos = os.listdir(path=inputdir)
 
 moleculas = []
 
 print('Calculando los vectores moleculares.')
 
 #######################################################################
+convension = """
+===============================================================================
+
+            ***  Convención de los resultados  ***
+
+
+Para interpretar los resultados de manera correcta, a continuación se imprime
+la manera en la que se representan las diferentes moléculas estudiadas con
+VeBaMoS:
+
+"""
+num = 0
+for archivo in archivos:
+    if ('.out' in archivo):
+        x = Molecula(archivo[:-4])
+        convension += archivo[:-4] + ' es representada por: ' + str(num) + '\n'
+        num +=1
+        moleculas.append(x)
+
+#######################################################################
+
+
+
+p = open(inputdir+args.output,'w')
+
+p.write("""
+
+                ------------------------------
+                 ╔╗  ╔╗ ╔══╗   ╔═╗╔═╗  ╔═══╦╗
+                 ║╚╗╔╝║ ║╔╗║   ║║╚╝║║  ║╔═╗║║
+                 ╚╗║║╔╩═╣╚╝╚╦══╣╔╗╔╗╠══╣╚══╣║
+                  ║╚╝║║═╣╔═╗║╔╗║║║║║║╔╗╠══╗╠╝
+                  ╚╗╔╣║═╣╚═╝║╔╗║║║║║║╚╝║╚═╝╠╗
+                   ╚╝╚══╩═══╩╝╚╩╝╚╝╚╩══╩═══╩╝
+              Un código de similaridad molecular
+                ------------------------------
+
+        ***********************************************
+        |                                             |
+        |          Universidad de los Andes           |
+        |           Departamento de Química           |
+        |                                             |
+        |  Grupo de estructura electrónica molecular  |
+        |                                             |
+        |         Jhon E. Zapata Rivera (Ph.D)        |
+        |         Camilo Prada Latorre (B.Sc)         |
+        ***********************************************
+
+
+
+Queremos agradecer al equipo del Department of theory and spectroscopy en el
+Max Planck Institute fuer Kohlenforschung por hacer de Orca un paquete libre,
+esto permite obtener la información mecanico-cuántica necesaria para poder
+poner en práctica este método de similaridad.
+
+
+-----------------------------------------------
+El directorio del que se se leen los inputs es: {}
+-----------------------------------------------
+
+
+""".format(inputdir))
+
+
+###################################################################
+#       imprimir la convención de las moléculas y los números.
+###################################################################
+
+
+p.write(convension + """
+""")
+
+
+inp = open(args.input, 'r')
+inplines = inp.readlines()
+
+p.write("""
+================================================================================
+   ***Input File:***
+
+""")
+
+propiedades = []
+
+for i in inplines:
+    p.write("""║{}""".format(i))
+
+
+    if('Dipolarx' in i and '#' not in i):
+        propiedades.append('Dipolarx')
+
+    if('Dipolary' in i and '#' not in i):
+        propiedades.append('Dipolary')
+
+    if('Dipolarz' in i and '#' not in i):
+        propiedades.append('Dipolarz')
+
+    if('DipolarT' in i and '#' not in i):
+        propiedades.append('DipolarT')
+
+    if('E_Disper' in i and '#' not in i):
+        propiedades.append('E_Disper')
+
+    if('Distanc1' in i and '#' not in i):
+        propiedades.append('Distanc1')
+
+    if('VolMolec' in i and '#' not in i):
+        propiedades.append('VolMolec')
+
+    if('A_Superf' in i and '#' not in i):
+        propiedades.append('A_Superf')
+
+    if('Qdrupolx' in i and '#' not in i):
+        propiedades.append('Qdrupolx')
+
+    if('Qdrupoly' in i and '#' not in i):
+        propiedades.append('Qdrupoly')
+
+    if('Qdrupolz' in i and '#' not in i):
+        propiedades.append('Qdrupolz')
+
+    if('QdrupolI' in i and '#' not in i):
+        propiedades.append('QdrupolI')
+
+    if('Polarizx' in i and '#' not in i):
+        propiedades.append('Polarizx')
+
+    if('Polarizy' in i and '#' not in i):
+        propiedades.append('Polarizy')
+
+    if('Polarizz' in i and '#' not in i):
+        propiedades.append('Polarizz')
+
+    if('PolarizI' in i and '#' not in i):
+        propiedades.append('PolarizI')
+
+    if('EnerHOMO' in i and '#' not in i):
+        propiedades.append('EnerHOMO')
+
+    if('EnerLUMO' in i and '#' not in i):
+        propiedades.append('EnerLUMO')
+
+    if('Distanc2' in i and '#' not in i):
+        propiedades.append('Distanc2')
+
+    if('Gap_HOLU' in i and '#' not in i):
+        propiedades.append('Gap_HOLU')
+
+    if('Dureza__' in i and '#' not in i):
+        propiedades.append('Dureza__')
+
+    if('Suavidad' in i and '#' not in i):
+        propiedades.append('Suavidad')
+
+    if('PQuimico' in i and '#' not in i):
+        propiedades.append('PQuimico')
+
+    if('Elfilici' in i and '#' not in i):
+        propiedades.append('Elfilici')
 
 toolbar_width = 40
 
@@ -489,32 +657,12 @@ sys.stdout.write("[%s]" % (" " * toolbar_width))
 sys.stdout.flush()
 sys.stdout.write("\b" * (toolbar_width+1)) # return to start of line, after '['
 
-for archivo in archivos:
-    if ('.out' in archivo):
-        x = Molecula(archivo[:-4])
-        moleculas.append(x)
-
-#######################################################################
+for m in moleculas:
+    m.propiedades = propiedades
     sys.stdout.write("-")
     sys.stdout.flush()
 
 sys.stdout.write("]\n") # this ends the progress bar
-
-propiedades = ['dipolarx', 'dipolary', 'dipolarz', 'magnitudDipolar', 'EnergiaDeDispersion', 'd1', 'volumenMolecula', 'areaSuperficial', 'quadrupolex', 'quadrupoley', 'quadrupolez', 'cuadrupoloIsotropico', 'polarizabilidadx', 'polarizabilidady', 'polarizabilidadz', 'polarizabilidadIsotropica', 'HOMO', 'LUMO', 'd2', 'gaphl', 'dureza', 'suavidad', 'potencialquimico', 'electrofilicidad']
-
-
-
-p = open('VectoresFull.csv', 'w')
-
-for i in range(len(propiedades)):
-    p.write(propiedades[i] + '.')
-
-p.write('\n')
-
-for i in range(len(moleculas)):
-    for j in range(len(moleculas[1].vector)):
-        p.write(f"{str(moleculas[i].vector[j]).replace('.',',')}" + '.')
-    p.write('\n')
 
 
 #-----------------------------------------------------------------------#
@@ -525,7 +673,6 @@ vectores = []
 
 for i in range(len(moleculas)):
     vectores.append(moleculas[i].vector)
-
 
 
 #-----------------------------------------------------------------------#
@@ -574,36 +721,6 @@ vecnorm = np.array(vecnorm)
 for i in range(len(vectores)):
 
         vectores[i] = vectores[i]/vecnorm
-
-
-
-#-----------------------------------------------------------------------#
-#----------------------- Imrpimir los vectores. ------------------------#
-#-----------------------------------------------------------------------#
-
-
-# propiedades = ['dipolarx', 'dipolary', 'dipolarz', 'magnitudDipolar', 'EnergiaDeDispersion', 'd1', 'volumenMolecula', 'areaSuperficial', 'quadrupolex', 'quadrupoley', 'quadrupolez', 'cuadrupoloIsotropico', 'polarizabilidadx', 'polarizabilidady', 'polarizabilidadz', 'polarizabilidadIsotropica', 'HOMO', 'LUMO', 'd2', 'gaphl', 'dureza', 'suavidad', 'potencialquimico', 'electrofilicidad']
-
-
-# f = open('Vectores.csv', 'w')
-
-
-# for i in range(len(propiedades)):
-#     f.write(propiedades[i] + '.')
-
-# f.write('\n')
-
-# for i in range(vectores[i]):
-#     for j in range(len(vectores[i])):
-#         f.write(f"{str(vectores[i][j]).replace('.',',')}" + '.')
-#     f.write('\n')
-
-
-
-
-
-
-
 
 #-----------------------------------------------------------------------#
 #------------------------- SimilVec en Numpy. --------------------------#
@@ -660,42 +777,7 @@ similaridades = similaridades.reshape(len(moleculas),len(moleculas))
 
 
 
-p = open(args.input+args.output,'w')
-
 p.write("""
-
-                ------------------------------
-                 ╔╗  ╔╗ ╔══╗   ╔═╗╔═╗  ╔═══╦╗
-                 ║╚╗╔╝║ ║╔╗║   ║║╚╝║║  ║╔═╗║║
-                 ╚╗║║╔╩═╣╚╝╚╦══╣╔╗╔╗╠══╣╚══╣║
-                  ║╚╝║║═╣╔═╗║╔╗║║║║║║╔╗╠══╗╠╝
-                  ╚╗╔╣║═╣╚═╝║╔╗║║║║║║╚╝║╚═╝╠╗
-                   ╚╝╚══╩═══╩╝╚╩╝╚╝╚╩══╩═══╩╝
-              Un código de similaridad molecular
-                ------------------------------
-
-        ***********************************************
-        |                                             |
-        |          Universidad de los Andes           |
-        |           Departamento de Química           |
-        |                                             |
-        |  Grupo de estructura electrónica molecular  |
-        |                                             |
-        |         Jhon E. Zapata Rivera (Ph.D)        |
-        |         Camilo Prada Latorre (B.Sc)         |
-        ***********************************************
-
-
-
-Queremos agradecer al equipo del Department of theory and spectroscopy en el
-Max Planck Institute fuer Kohlenforschung por hacer de Orca un paquete libre,
-esto permite obtener la información mecanico-cuántica necesaria para poder
-poner en práctica este método de similaridad.
-
-
------------------------------------------------
-El directorio del que se se leen los inputs es: {}
------------------------------------------------
 
 
 ================================================================================
@@ -705,13 +787,18 @@ El directorio del que se se leen los inputs es: {}
                       #   Matriz de Similaridad Molecular  #
                       ######################################
 
-""".format(args.input))
+""".format(inputdir))
 
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#######################################
+#   Hay que corregir los espacios antes del número de fila para los demás 'if'  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#######################################
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 i = 0
 
 while (i<= len(similaridades)-5):
     p.write("""
-{: >14} {: >13} {: >13} {: >13} {: >13}
+ {: >14} {: >13} {: >13} {: >13} {: >13}
           --------      --------      --------      --------      --------""".format(i, i+1, i+2, i+3, i+4))
 
     for j in range(len(similaridades)):
@@ -738,6 +825,73 @@ while (i<= len(similaridades)-5):
     p.write("""\n""")
     i = i+5
 
+res = (len(similaridades)/5 - int(len(similaridades)/5))*5
+
+res = int(round(res,1))
+
+if(res == 1):
+
+    p.write("""
+ {: >14}
+          --------""".format(i))
+
+    for j in range(len(similaridades)):
+
+        p.write("""
+   {} {: >13.6f}""".format(j, similaridades[i][j]))
+
+    p.write("""\n""")
+
+if(res == 2):
+    p.write("""
+ {: >14} {: >13}
+          --------      --------""".format(i, i+1))
+
+    for j in range(len(similaridades)):
+
+        p.write("""
+   {} {: >13.6f} {: >13.6f}""".format(j, similaridades[i][j], similaridades[i+1][j]))
+
+    p.write("""\n""")
+
+
+if(res == 3):
+    p.write("""
+ {: >14} {: >13} {: >13}
+          --------      --------      --------""".format(i, i+1, i+2))
+
+    for j in range(len(similaridades)):
+
+        p.write("""
+   {} {: >13.6f} {: >13.6f} {: >13.6f}""".format(j, similaridades[i][j], similaridades[i+1][j], similaridades[i+2][j]))
+
+    p.write("""\n""")
+
+if(res == 4):
+
+    p.write("""
+ {: >14} {: >13} {: >13} {: >13}
+          --------      --------      --------      --------""".format(i, i+1, i+2, i+3))
+
+    for j in range(len(similaridades)):
+
+        if(len(str(j)) == 1):
+            p.write("""
+   {} {: >13.6f} {: >13.6f} {: >13.6f} {: >13.6f}""".format(j, similaridades[i][j], similaridades[i+1][j], similaridades[i+2][j], similaridades[i+3][j]))
+
+        if(len(str(j)) == 2):
+            p.write("""
+  {} {: >13.6f} {: >13.6f} {: >13.6f} {: >13.6f}""".format(j, similaridades[i][j], similaridades[i+1][j], similaridades[i+2][j], similaridades[i+3][j]))
+
+    p.write("""\n""")
+
+
+############################################################################################
+#
+#           Impresión de los vectores, con el módulo activado.
+#
+############################################################################################
+
 
 if(args.vectores):
 
@@ -758,27 +912,83 @@ Se activó la impresión de los vectores moleculares
 
     """)
 
-    propiedades = ['Dipolarx', 'Dipolary', 'Dipolarz', 'DipolarT', 'E_Disper',
-                    'Distanc1', 'VolMolec', 'A_Superf', 'Qdrupolx', 'Qdrupoly',
-                    'Qdrupolz', 'QdrupolI', 'Polarizx', 'Polarizy', 'Polarizz',
-                    'PolarizI', 'EnerHOMO', 'EnerLUMO', 'Distanc2', 'Gap_HOLU',
-                    'Dureza__', 'Suavidad', 'PQuimico', 'Elfilici']
+    # propiedades = ['Dipolarx', 'Dipolary', 'Dipolarz', 'DipolarT', 'E_Disper',
+    #                 'Distanc1', 'VolMolec', 'A_Superf', 'Qdrupolx', 'Qdrupoly',
+    #                 'Qdrupolz', 'QdrupolI', 'Polarizx', 'Polarizy', 'Polarizz',
+    #                 'PolarizI', 'EnerHOMO', 'EnerLUMO', 'Distanc2', 'Gap_HOLU',
+    #                 'Dureza__', 'Suavidad', 'PQuimico', 'Elfilici']
 
     i = 0
 
     while (i<= len(moleculas)-5):
         p.write("""
-    {: >14} {: >13} {: >13} {: >13} {: >13}
-              --------      --------      --------      --------      --------""".format(i, i+1, i+2, i+3, i+4))
+    {: >14} {: >12} {: >12} {: >12} {: >12}
+              --------     --------     --------     --------     --------""".format(i, i+1, i+2, i+3, i+4))
 
         for j in range(len(propiedades)):
 
             p.write("""
-{} {: >13.6f} {: >13.6f} {: >13.6f} {: >13.6f} {: >13.6f}""".format(propiedades[j], vectores[i][j], vectores[i+1][j], vectores[i+2][j], vectores[i+3][j], vectores[i+4][j]))
+{} {: >13.6f} {: >12.6f} {: >12.6f} {: >12.6f} {: >12.6f}""".format(propiedades[j], vectores[i][j], vectores[i+1][j], vectores[i+2][j], vectores[i+3][j], vectores[i+4][j]))
 
 
         p.write('\n')
         i = i+5
+
+
+    if(res == 1):
+
+        p.write("""
+    {: >14}
+              --------""".format(i))
+
+        for j in range(len(propiedades)):
+
+            p.write("""
+{} {: >13.6f}""".format(propiedades[j], vectores[i][j]))
+
+        p.write("""\n""")
+
+    if(res == 2):
+        p.write("""
+    {: >14} {: >12}
+              --------     --------""".format(i, i+1))
+
+        for j in range(len(propiedades)):
+
+            p.write("""
+{} {: >13.6f} {: >12.6f}""".format(propiedades[j], vectores[i][j], vectores[i+1][j]))
+
+        p.write("""\n""")
+
+
+    if(res == 3):
+        p.write("""
+    {: >14} {: >12} {: >12}
+              --------     --------     --------""".format(i, i+1, i+2))
+
+        for j in range(len(propiedades)):
+
+            p.write("""
+{} {: >13.6f} {: >12.6f} {: >12.6f}""".format(propiedades[j], vectores[i][j], vectores[i+1][j], vectores[i+2][j]))
+
+        p.write("""\n""")
+
+    if(res == 4):
+
+        p.write("""
+    {: >14} {: >12} {: >12} {: >12}
+              --------     --------     --------     --------""".format(i, i+1, i+2, i+3))
+
+        for j in range(len(propiedades)):
+
+            p.write("""
+{} {: >13.6f} {: >12.6f} {: >12.6f} {: >12.6f}""".format(propiedades[j], vectores[i][j], vectores[i+1][j], vectores[i+2][j], vectores[i+3][j]))
+
+
+
+        p.write("""\n""")
+
+
 
 
 ########### HACE FALTA ARREGLAR ESTO PARA QUE EN VERDAD GRAFIQUE LO QUE DEBE GRAFICAR.
@@ -792,7 +1002,7 @@ if(args.grafica):
     plt.figure()
     plt.scatter(x,sigma)
     plt.scatter(x,sigman)
-    plt.savefig(args.input+args.output[:-4]+'.png')
+    plt.savefig(inputdir+args.output[:-4]+'.png')
 
 
     p.write("""
@@ -837,5 +1047,8 @@ Duró: {}
 
 
 p.close()
+
+# Lograr que solo se calculen las propiedades indicadas.
+
 
 print('Listo.')
