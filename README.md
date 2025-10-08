@@ -42,7 +42,8 @@ The similarity between two molecules \( X \) and \( Y \) is quantified by:
 
 
 $\alpha &= ||\vec{X}|| - ||\vec{Y}||$
-$\beta &= \arccos\left(\frac{\vec{X}\cdot\vec{Y}}{||\vec{X}|| \, ||\vec{Y}||}\right)$
+
+$\beta &= \arccos\left(\frac{\vec{X}\cdot\vec{Y}}{||\vec{X}|| , ||\vec{Y}||}\right)$
 
 We then calculate a final similarity index to improve the interpretability:
 
