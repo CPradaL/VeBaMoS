@@ -106,7 +106,7 @@ VeBaMoS uses a **structured text input file** to specify settings, molecules, an
 Example (`input.inp`):
 
 ```bash
-!Out=(Results) Vectores=(Norm) ExpInf=(activities.txt,testosterone)
+!Out=(Results) Vectores=(Norm)
 !Inp=(/home/user/molecules)
 
 %archivos
