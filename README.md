@@ -31,9 +31,8 @@ Unlike many existing methods that rely only on geometric or electronic propertie
 
 Each molecule is represented as a vector in a descriptor space:
 
-\[
-\vec{X} = \sum_{i=1}^{n} x_i \vec{a_i}
-\]
+$\vec{X} = \sum_{i=1}^{n} x_i \vec{a_i}$
+
 
 To address the difference in magnitude between each descriptor, they are normalized by converting it into a fraction of the total sum of its values. After normalization:
 
