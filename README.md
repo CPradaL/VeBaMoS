@@ -36,24 +36,17 @@ $\vec{X} = \sum_{i=1}^{n} x_i \vec{a_i}$
 
 To address the difference in magnitude between each descriptor, they are normalized by converting it into a fraction of the total sum of its values. After normalization:
 
-\[
-x'_i = \frac{x_i}{\sum_j x_j}
-\]
+$x'_i = \frac{x_i}{\sum_j x_j}$
 
 The similarity between two molecules \( X \) and \( Y \) is quantified by:
 
-\[
-\begin{aligned}
-\alpha &= ||\vec{X}|| - ||\vec{Y}|| \\
-\beta &= \arccos\left(\frac{\vec{X}\cdot\vec{Y}}{||\vec{X}|| \, ||\vec{Y}||}\right)
-\end{aligned}
-\]
+
+$\alpha &= ||\vec{X}|| - ||\vec{Y}||$
+$\beta &= \arccos\left(\frac{\vec{X}\cdot\vec{Y}}{||\vec{X}|| \, ||\vec{Y}||}\right)$
 
 We then calculate a final similarity index to improve the interpretability:
 
-\[
-\sigma(z) = \frac{1}{e^{z / \log_{10}(N)}}, \quad z = |\alpha| + |\beta|
-\]
+$\sigma(z) = \frac{1}{e^{z / \log_{10}(N)}}, \quad z = |\alpha| + |\beta|$
 
 where \( N \) is the number of molecules in the dataset.
 
